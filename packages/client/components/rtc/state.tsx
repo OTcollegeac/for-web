@@ -448,10 +448,10 @@ class Voice {
     ) {
       qualities.high = {
         name: "high",
-        resolution: ScreenSharePresets.h1080fps30.resolution,
-        fullName: `1080p 30FPS`,
+        resolution: ScreenSharePresets.h1080fps60.resolution,
+        fullName: `1080p 60FPS`,
         contentHint: "motion",
-        encoding: ScreenSharePresets.h1080fps30.encoding,
+        encoding: ScreenSharePresets.h1080fps60.encoding,
       };
       const originalResolution = ScreenSharePresets.original.resolution;
       originalResolution.frameRate = 5;
