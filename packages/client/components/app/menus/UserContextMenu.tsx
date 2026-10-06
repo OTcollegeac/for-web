@@ -323,6 +323,9 @@ export function UserContextMenu(props: {
     const server = member?.server;
     if (!props.inVoice || !member || !server) return [];
 
+    const currentMember = server.member;
+    if (!currentMember || !member.inferiorTo(currentMember)) return [];
+
     const currentChannel = server.channels.find((channel) =>
       channel.voiceParticipants.has(props.user.id),
     );
