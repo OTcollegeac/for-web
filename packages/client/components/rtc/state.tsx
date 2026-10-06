@@ -454,7 +454,10 @@ class Voice {
           frameRate: 60,
           aspectRatio: 1920 / 1080,
         },
-        encoding: ScreenSharePresets.h1080fps30.encoding,
+        encoding: {
+          ...ScreenSharePresets.h1080fps30.encoding,
+          maxFramerate: 60,
+        },
       };
 
       qualities.high = {
