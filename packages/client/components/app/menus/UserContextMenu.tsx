@@ -318,27 +318,7 @@ export function UserContextMenu(props: {
     );
   }
 
-  function moveTargets() {
-    const member = props.member;
-    const server = member?.server;
-    if (!props.inVoice || !member || !server) return [];
 
-    const currentMember = server.member;
-    if (!currentMember || !member.inferiorTo(currentMember)) return [];
-
-    const currentChannel = server.channels.find((channel) =>
-      channel.voiceParticipants.has(props.user.id),
-    );
-    if (!currentChannel?.havePermission("MoveMembers")) return [];
-
-    return server.channels.filter(
-      (channel) =>
-        channel.isVoice &&
-        channel.id !== currentChannel.id &&
-        channel.havePermission("Connect") &&
-        member.hasPermission(channel, "Connect"),
-    );
-  }
 
   function moveMemberTo(channelId: string) {
     props.member?.edit({ voice_channel: channelId }).catch(showError);
@@ -396,24 +376,6 @@ export function UserContextMenu(props: {
         >
           <Trans>Mute</Trans>
         </ContextMenuButton>
-        <Show when={moveTargets().length > 0}>
-          <ContextMenuDivider />
-          <ContextMenuSubMenu
-            buttonContent={<Trans>Move to channel</Trans>}
-            symbol={<Symbol size={16}>swap_horiz</Symbol>}
-          >
-            <For each={moveTargets()}>
-              {(channel) => (
-                <ContextMenuButton
-                  onClick={() => moveMemberTo(channel.id)}
-                  symbol={<Symbol size={16}>voice_chat</Symbol>}
-                >
-                  {channel.name}
-                </ContextMenuButton>
-              )}
-            </For>
-          </ContextMenuSubMenu>
-        </Show>
         <ContextMenuDivider />
       </Show>
       <Show when={props.isScreenshare && !props.user.self}>
