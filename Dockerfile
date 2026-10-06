@@ -22,7 +22,7 @@ RUN pnpm install --frozen-lockfile
 
 # Build sub-dependencies (stoat.js, livekit-components, lingui plugins, panda css etc)
 RUN pnpm --filter stoat.js build && \
-  pnpm --filter solid-livekit-components build && \
+  CI=true pnpm --filter solid-livekit-components build && \
   pnpm --filter client exec lingui compile --typescript && \
   pnpm --filter client exec node scripts/copyAssets.mjs && \
   pnpm --filter client exec panda codegen
