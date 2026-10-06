@@ -5,7 +5,7 @@ import { useSmartParams } from "@revolt/routing";
 import { useState } from "@revolt/state";
 import { Slider, Symbol, Text } from "@revolt/ui";
 import { useNavigate } from "@solidjs/router";
-import { type JSX, Match, Show, Switch } from "solid-js";
+import { For, type JSX, Match, Show, Switch } from "solid-js";
 import type { Channel, Message, ServerMember, User } from "stoat.js";
 import { styled } from "styled-system/jsx";
 
@@ -13,6 +13,7 @@ import {
   ContextMenu,
   ContextMenuButton,
   ContextMenuDivider,
+  ContextMenuSubMenu,
 } from "./ContextMenu";
 import { NotificationContextMenu } from "./shared/NotificationContextMenu";
 
@@ -33,7 +34,7 @@ export function UserContextMenu(props: {
   const state = useState();
   const client = useClient();
   const navigate = useNavigate();
-  const { openModal, modals } = useModals();
+  const { openModal, modals, showError } = useModals();
 
   // server context
   const params = useSmartParams();
@@ -317,6 +318,29 @@ export function UserContextMenu(props: {
     );
   }
 
+  function moveTargets() {
+    const member = props.member;
+    const server = member?.server;
+    if (!props.inVoice || !member || !server) return [];
+
+    const currentChannel = server.channels.find((channel) =>
+      channel.voiceParticipants.has(props.user.id),
+    );
+    if (!currentChannel?.havePermission("MoveMembers")) return [];
+
+    return server.channels.filter(
+      (channel) =>
+        channel.isVoice &&
+        channel.id !== currentChannel.id &&
+        channel.havePermission("Connect") &&
+        member.hasPermission(channel, "Connect"),
+    );
+  }
+
+  function moveMemberTo(channelId: string) {
+    props.member?.edit({ voice_channel: channelId }).catch(showError);
+  }
+
   return (
     <ContextMenu class="UserContextMenu">
       {/* Voice controls */}
@@ -369,6 +393,24 @@ export function UserContextMenu(props: {
         >
           <Trans>Mute</Trans>
         </ContextMenuButton>
+        <Show when={moveTargets().length > 0}>
+          <ContextMenuDivider />
+          <ContextMenuSubMenu
+            buttonContent={<Trans>Move to channel</Trans>}
+            symbol={<Symbol size={16}>swap_horiz</Symbol>}
+          >
+            <For each={moveTargets()}>
+              {(channel) => (
+                <ContextMenuButton
+                  onClick={() => moveMemberTo(channel.id)}
+                  symbol={<Symbol size={16}>voice_chat</Symbol>}
+                >
+                  {channel.name}
+                </ContextMenuButton>
+              )}
+            </For>
+          </ContextMenuSubMenu>
+        </Show>
         <ContextMenuDivider />
       </Show>
       <Show when={props.isScreenshare && !props.user.self}>
