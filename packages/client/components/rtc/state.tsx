@@ -446,12 +446,23 @@ class Voice {
       (limit[0] === 0 || limit[0] >= 1920) &&
       (limit[1] === 0 || limit[1] >= 1080)
     ) {
+      const h1080fps60 = {
+        resolution: {
+          ...ScreenSharePresets.h1080fps30.resolution,
+          width: 1920,
+          height: 1080,
+          frameRate: 60,
+          aspectRatio: 1920 / 1080,
+        },
+        encoding: ScreenSharePresets.h1080fps30.encoding,
+      };
+
       qualities.high = {
         name: "high",
-        resolution: ScreenSharePresets.h1080fps60.resolution,
+        resolution: h1080fps60.resolution,
         fullName: `1080p 60FPS`,
         contentHint: "motion",
-        encoding: ScreenSharePresets.h1080fps60.encoding,
+        encoding: h1080fps60.encoding,
       };
       const originalResolution = ScreenSharePresets.original.resolution;
       originalResolution.frameRate = 5;
